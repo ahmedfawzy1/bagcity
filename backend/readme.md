@@ -80,6 +80,7 @@ Environment values are read from your shell / `.env`.
 | `GOOGLE_CLIENT_ID`                                     | Google OAuth client ID (for ID-token verification) |
 | `STRIPE_SECRET_KEY`                                    | Stripe secret key                                  |
 | `EMAIL_ADDRESS` / `EMAIL_API_KEY` / `EMAIL_SECRET_KEY` | SMTP credentials for OTP and password-reset emails |
+| `KEEP_ALIVE_SECRET`                                    | Bearer token for `GET /api/keep-alive`             |
 
 ## Security
 
@@ -116,6 +117,12 @@ admin routes additionally require `role === "admin"`.
 | `GET/POST/PUT/DELETE /api/coupons`    | `coupon.route.js`    | admin (+ public `/validate`)  |
 | `GET/POST/DELETE /api/admins`         | `admin.routes.js`    | admin                         |
 | `GET /api/dashboard/*`                | `dashboard.route.js` | admin                         |
+| `GET /api/keep-alive`                 | `keepAlive.route.js` | `KEEP_ALIVE_SECRET` bearer    |
+
+A GitHub Actions workflow (`.github/workflows/mongodb-keep-alive.yml`) calls
+`/api/keep-alive` once a week so the MongoDB cluster doesn't pause from
+inactivity. It needs two repository secrets: `KEEP_ALIVE_URL` (the full
+endpoint URL) and `KEEP_ALIVE_SECRET` (same value as the backend env var).
 
 ### Auth endpoints
 

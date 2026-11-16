@@ -25,6 +25,7 @@ import orderRoutes from "./routes/order.route.js";
 import couponRoutes from "./routes/coupon.route.js";
 import adminRoutes from "./routes/admin.routes.js";
 import dashboardRoutes from "./routes/dashboard.route.js";
+import keepAliveRoutes from "./routes/keepAlive.route.js";
 
 dotenv.config();
 
@@ -120,6 +121,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/admins", adminRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/keep-alive", keepAliveRoutes);
 
 // 404 handler
 app.use((req, res) => {

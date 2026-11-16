@@ -1,0 +1,38 @@
+name: MongoDB Keep Alive
+
+on:
+  schedule:
+    # Every Monday at 05:23 UTC
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Query MongoDB through the backend
+        env:
+          KEEP_ALIVE_URL: ${{ secrets.KEEP_ALIVE_URL }}
+          KEEP_ALIVE_SECRET: ${{ secrets.KEEP_ALIVE_SECRET }}
+        run: |
+          : "${KEEP_ALIVE_URL:?Set the KEEP_ALIVE_URL repository secret}"
+          : "${KEEP_ALIVE_SECRET:?Set the KEEP_ALIVE_SECRET repository secret}"
+          status_code="$(curl --fail \
+            --silent \
+            --show-error \
+            --connect-timeout 15 \
+            --max-time 60 \
+            --retry 2 \
+            --retry-delay 10 \
+            --output /dev/null \
+            --write-out '%{http_code}' \
+            -H "Authorization: Bearer ${KEEP_ALIVE_SECRET}" \
+            "${KEEP_ALIVE_URL}")"
+          if [ "$status_code" != "200" ]; then
+            echo "Keep-alive failed: HTTP $status_code"
+            exit 1
+          fi
+          echo "MongoDB keep-alive succeeded (HTTP 200)."
